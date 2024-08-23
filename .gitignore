@@ -1,0 +1,41 @@
+# Logs
+logs/
+*.log
+
+# Dependency directories
+node_modules/
+vendor/
+
+# Environment variables
+.env
+
+# Build directories and files
+dist/
+build/
+*.out
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Compiled source files
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Backup files
+*.bak
+*.swp
+*~
+
+# Specific files
+credentials.json
+secret_config.yaml
