@@ -1,16 +1,26 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
+  env: {
+    browser: true,
+    es2021: true,
+    node: true,
+  },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'prettier'
+    'plugin:prettier/recommended',
   ],
-  plugins: ['@typescript-eslint'],
-  env: {
-    node: true,
-    es6: true
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
   },
+  plugins: ['@typescript-eslint', 'prettier'],
   rules: {
-    // your custom rules here
-  }
+    'prettier/prettier': [
+      'error',
+      {
+        bracketSpacing: true,
+      },
+    ],
+  },
 };

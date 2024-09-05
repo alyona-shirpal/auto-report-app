@@ -1,5 +1,5 @@
 import { WebClient } from '@slack/web-api';
-import * as process from "process";
+import * as process from 'process';
 
 export class SlackService {
   private client: WebClient;
@@ -20,4 +20,3 @@ export class SlackService {
     }
   }
 }
-
