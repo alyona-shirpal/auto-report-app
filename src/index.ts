@@ -33,7 +33,7 @@ async function main() {
       logger.info('Message sent successfully');
     }
   } catch (error) {
-    logger.error('Failed to fetch commits:', error);
+    logger.error('Error in the main function', error);
   }
 }
 
