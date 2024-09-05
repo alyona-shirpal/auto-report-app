@@ -1,5 +1,6 @@
 import { WebClient } from '@slack/web-api';
 import * as process from 'process';
+import logger from '../utils/logger';
 
 export class SlackService {
   private client: WebClient;
@@ -14,9 +15,8 @@ export class SlackService {
         channel,
         text: message,
       });
-      console.log(`Message sent to ${channel}`);
     } catch (error) {
-      console.error('Error sending message to Slack channel:', error);
+      logger.error('Error sending message to Slack channel');
     }
   }
 }

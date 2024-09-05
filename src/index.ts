@@ -3,30 +3,37 @@ import { CronJob } from 'cron';
 import { ChatGptAiService } from './services/openai.service';
 import { SlackService } from './services/slack.service';
 import * as process from 'process';
+import { SupabaseService } from './services/supabase.service';
+import logger from './utils/logger';
 
-// Initialize GitHubService
 const gitHubService = new GitHubService();
+const supabaseService = new SupabaseService();
 
-// Function to run the getCommits method
 async function main() {
   try {
-    const commits = await gitHubService.getCommits();
+    const repos = await supabaseService.getRepos();
+
+    const commits = await gitHubService.getCommits(repos);
 
     if (commits.length) {
       const chatGptAiService = new ChatGptAiService(commits);
 
       const aiResponse = await chatGptAiService.generateOpenAIResponse();
 
+      logger.info('Message to slack:', aiResponse);
+
       if (aiResponse) {
         const slackService = new SlackService();
+
         await slackService.sendMessage(
           process.env.SLACK_CHANNEL_ID,
           aiResponse
         );
       }
+      logger.info('Message sent successfully');
     }
   } catch (error) {
-    console.error('Failed to fetch commits:', error);
+    logger.error('Failed to fetch commits:', error);
   }
 }
 
@@ -34,11 +41,10 @@ async function main() {
   await main();
 })();
 
-// Schedule the fetchGitHubCommits function to run once per day at 6 PM using `cron`
-// const job = new CronJob('0 18 * * *', async () => {
-//   console.log('Running daily commit check...');
-//   await fetchGitHubCommits();
-// });
+// Schedule the function to run once per day at 6 PM
+const job = new CronJob('0 18 * * *', async () => {
+  logger.info('Running daily commit check...');
+  await main();
+});
 
-// Start the cron job
-// job.start();
+job.start();

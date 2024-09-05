@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import { Chat } from 'openai/resources';
 import { CommitResponse } from '../types/interfaces/github.interface';
 import ChatCompletionMessageParam = Chat.ChatCompletionMessageParam;
+import logger from '../utils/logger';
 
 export class ChatGptAiService {
   private openai: OpenAI;
@@ -41,6 +42,7 @@ export class ChatGptAiService {
 
       if (content) return content;
     } catch (err) {
+      logger.error('Error in openai.chat.completions');
       throw new Error(`Error in openai.chat.completions.create: ${err}`);
     }
   }

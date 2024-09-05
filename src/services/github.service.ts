@@ -9,6 +9,7 @@ import {
   Repository,
 } from '../types/interfaces/github.interface';
 import moment from 'moment';
+import logger from '../utils/logger';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ export class GitHubService {
     this.token = process.env.GITHUB_TOKEN;
 
     if (!this.token) {
+      logger.error('GitHub token is not set');
       throw new Error(
         'GitHub token is not set. Please set GITHUB_TOKEN in environment variables.'
       );
@@ -41,20 +43,16 @@ export class GitHubService {
   }
 
   // get commits of all branches of repos that are specified in the env.
-  async getCommits(): Promise<CommitResponse[]> {
+  async getCommits(repos: string[]): Promise<CommitResponse[]> {
     try {
       const authenticatedUser = process.env.GITHUB_USER_NAME;
 
-      // Fetch all repositories for the authenticated user
+      // Fetch gitHub repos
       const reposResponse: Repository[] = await this.request('/user/repos', {
         per_page: 100,
       });
 
-      const myRepos = process.env.GITHUB_REPOS.split(',');
-
-      const selectedRepos = reposResponse.filter(el =>
-        myRepos.includes(el.name)
-      );
+      const selectedRepos = reposResponse.filter(el => repos.includes(el.name));
 
       const startOfDay = moment()
         .utc()
@@ -64,21 +62,16 @@ export class GitHubService {
       const allCommits: CommitResponse[] = [];
 
       for (const repo of selectedRepos) {
-        // Fetch all branches in the repository
         const branches: Branch[] = await this.request<Branch[]>(
           `/repos/${repo.owner.login}/${repo.name}/branches`,
           { per_page: 100 }
         );
 
         for (const branch of branches) {
-          // Fetch commits for each branch from the start of the day to now
+          // Fetch commits for each branch from the start of the day
           const commits: CommitResponse[] = await this.request(
             `/repos/${repo.owner.login}/${repo.name}/commits`,
-            {
-              per_page: 100,
-              since: startOfDay,
-              sha: branch.name,
-            }
+            { per_page: 100, since: startOfDay, sha: branch.name }
           );
 
           if (commits.length) {
@@ -93,16 +86,17 @@ export class GitHubService {
                 branch: branch.name,
               }));
 
-            // Append commits to allCommits array
-            allCommits.push(...(filteredCommits as CommitResponse));
+            logger.info(`Found ${filteredCommits.length} commits.`);
+
+            allCommits.push(...(filteredCommits as CommitResponse[]));
           }
         }
       }
 
       return allCommits;
     } catch (error) {
-      console.error('Error fetching commits:', error);
-      throw error;
+      logger.error('Error fetching commits:', error);
+      throw new Error(error);
     }
   }
 }
