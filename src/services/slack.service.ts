@@ -4,14 +4,19 @@ import logger from '../utils/logger';
 
 export class SlackService {
   private client: WebClient;
+  private readonly channel: string;
 
   constructor() {
     this.client = new WebClient(process.env.SLACK_TOKEN);
+    this.channel = process.env.SLACK_CHANNEL_ID;
   }
 
-  public async sendMessage(channel: string, message: string): Promise<void> {
+  public async sendMessage(message: string): Promise<void> {
     try {
-      await this.client.chat.postMessage({ channel, text: message });
+      await this.client.chat.postMessage({
+        channel: this.channel,
+        text: message,
+      });
     } catch (error) {
       logger.error(`Error sending message to Slack channel: ${error}`);
     }

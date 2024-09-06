@@ -25,10 +25,7 @@ async function main() {
       if (aiResponse) {
         const slackService = new SlackService();
 
-        await slackService.sendMessage(
-          process.env.SLACK_CHANNEL_ID,
-          aiResponse
-        );
+        await slackService.sendMessage(aiResponse);
       }
 
       logger.info('Message sent successfully to Slack channel');
@@ -38,13 +35,13 @@ async function main() {
   }
 }
 
-// uncomment to test locally
+// Uncomment to test locally
 // (async () => {
 //   await main();
 // })();
 
-// Schedule the function to run once per day at 6 PM
-const job = new CronJob('0 18 * * *', async () => {
+// Schedule the function to run once per day at the time provided by env
+const job = new CronJob(`0 ${process.env.EXECUTE_TIME} * * *`, async () => {
   logger.info('Running daily commit check...');
   await main();
 });
