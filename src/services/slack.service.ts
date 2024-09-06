@@ -11,12 +11,9 @@ export class SlackService {
 
   public async sendMessage(channel: string, message: string): Promise<void> {
     try {
-      await this.client.chat.postMessage({
-        channel,
-        text: message,
-      });
+      await this.client.chat.postMessage({ channel, text: message });
     } catch (error) {
-      logger.error('Error sending message to Slack channel');
+      logger.error(`Error sending message to Slack channel: ${error}`);
     }
   }
 }

@@ -42,12 +42,11 @@ export class GitHubService {
     return response.data;
   }
 
-  // get commits of all branches of repos that are specified in the env.
+  // get commits of all branches of repos that are specified in the supabase table
   async getCommits(repos: string[]): Promise<CommitResponse[]> {
     try {
       const authenticatedUser = process.env.GITHUB_USER_NAME;
 
-      // Fetch gitHub repos
       const reposResponse: Repository[] = await this.request('/user/repos', {
         per_page: 100,
       });

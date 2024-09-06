@@ -30,16 +30,18 @@ async function main() {
           aiResponse
         );
       }
-      logger.info('Message sent successfully');
+
+      logger.info('Message sent successfully to Slack channel');
     }
   } catch (error) {
-    logger.error('Error in the main function', error);
+    logger.error(error);
   }
 }
 
-(async () => {
-  await main();
-})();
+// uncomment to test locally
+// (async () => {
+//   await main();
+// })();
 
 // Schedule the function to run once per day at 6 PM
 const job = new CronJob('0 18 * * *', async () => {
